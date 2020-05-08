@@ -33,7 +33,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
                 // Load native library after(!) OpenCV initialization
                 System.loadLibrary("native-lib");
-
+                mOpenCvCameraView.setCameraIndex(1);
+                mOpenCvCameraView.enableFpsMeter();
                 mOpenCvCameraView.enableView();
             } else {
                 super.onManagerConnected(status);
