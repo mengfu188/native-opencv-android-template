@@ -75,6 +75,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 //                mOpenCvCameraView.setRotation(180);
 //        mOpenCvCameraView.resi
         mOpenCvCameraView.setCvCameraViewListener(this);
+        FaceDetectV2.init(getAssets(), 0, true);
     }
 
     @Override
@@ -135,17 +136,22 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Mat rotateMat = Imgproc.getRotationMatrix2D(new Point(mRgba.rows() / 2, mRgba.cols() / 2), 90, 1);
         Imgproc.warpAffine(mRgba, mRgba, rotateMat, mRgba.size());
 
-//        Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(mRgba, bmp);
-//
+        Scalar green = new Scalar(0, 255, 0);
+        Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mRgba, bmp);
+
+        float []result = FaceDetectV2.detectByBitmap(bmp);
+        if(result != null){
+            Imgproc.rectangle(mRgba, new Point(result[1], result[2]), new Point(result[3], result[4]), green);
+        }
+
 //        Utils.bitmapToMat(bmp, mRgba);
 //        Mat out = new Mat();
 //        Imgproc.resize(mRgba, out, new Size(), 0.5, 0.5);
         // native call to process current camera frame
 //        adaptiveThresholdFromJNI(mat.getNativeObjAddr());
-        Scalar green = new Scalar(0, 255, 0);
-        Imgproc.rectangle(mRgba, new Rect(0, 0, 100, 100), green);
-        Imgproc.putText(mRgba, ""+mRgba.width()+"x"+mRgba.height(),  new Point(0, 20) ,Imgproc.FONT_HERSHEY_SIMPLEX ,1, green);
+//        Imgproc.rectangle(mRgba, new Rect(0, 0, 100, 100), green);
+//        Imgproc.putText(mRgba, ""+mRgba.width()+"x"+mRgba.height(),  new Point(0, 20) ,Imgproc.FONT_HERSHEY_SIMPLEX ,1, green);
 
         // return processed frame for live preview
         return mRgba;
