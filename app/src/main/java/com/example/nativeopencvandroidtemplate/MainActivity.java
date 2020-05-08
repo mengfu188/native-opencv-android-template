@@ -3,6 +3,8 @@ package com.example.nativeopencvandroidtemplate;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -17,7 +19,10 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends Activity implements CvCameraViewListener2 {
     private static final String TAG = "MainActivity";
@@ -33,8 +38,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
                 // Load native library after(!) OpenCV initialization
                 System.loadLibrary("native-lib");
-                mOpenCvCameraView.setCameraIndex(1);
-                mOpenCvCameraView.enableFpsMeter();
                 mOpenCvCameraView.enableView();
             } else {
                 super.onManagerConnected(status);
@@ -61,6 +64,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         mOpenCvCameraView = findViewById(R.id.main_surface);
 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+
+
+        mOpenCvCameraView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_FRONT);
+//        mOpenCvCameraView.set
+        mOpenCvCameraView.enableFpsMeter();
+//                mOpenCvCameraView.setRotation(180);
 
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
@@ -118,13 +127,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public Mat onCameraFrame(CvCameraViewFrame frame) {
         // get current camera frame as OpenCV Mat object
 //        Mat mat = frame.gray();
-        Mat mat = frame.rgba();
+        Mat mRgba = frame.rgba();
+//        Imgproc.rot
+        Mat rotateMat = Imgproc.getRotationMatrix2D(new Point(mRgba.rows() / 2, mRgba.cols() / 2), 90, 1);
+        Imgproc.warpAffine(mRgba, mRgba, rotateMat, mRgba.size());
 
+        Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mRgba, bmp);
+
+        Utils.bitmapToMat(bmp, mRgba);
         // native call to process current camera frame
 //        adaptiveThresholdFromJNI(mat.getNativeObjAddr());
 
         // return processed frame for live preview
-        return mat;
+        return mRgba;
     }
 
     private native void adaptiveThresholdFromJNI(long mat);
