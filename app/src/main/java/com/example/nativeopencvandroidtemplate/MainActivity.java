@@ -22,6 +22,9 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends Activity implements CvCameraViewListener2 {
@@ -70,7 +73,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 //        mOpenCvCameraView.set
         mOpenCvCameraView.enableFpsMeter();
 //                mOpenCvCameraView.setRotation(180);
-
+//        mOpenCvCameraView.resi
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 
@@ -132,12 +135,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Mat rotateMat = Imgproc.getRotationMatrix2D(new Point(mRgba.rows() / 2, mRgba.cols() / 2), 90, 1);
         Imgproc.warpAffine(mRgba, mRgba, rotateMat, mRgba.size());
 
-        Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(mRgba, bmp);
-
-        Utils.bitmapToMat(bmp, mRgba);
+//        Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(mRgba, bmp);
+//
+//        Utils.bitmapToMat(bmp, mRgba);
+//        Mat out = new Mat();
+//        Imgproc.resize(mRgba, out, new Size(), 0.5, 0.5);
         // native call to process current camera frame
 //        adaptiveThresholdFromJNI(mat.getNativeObjAddr());
+        Scalar green = new Scalar(0, 255, 0);
+        Imgproc.rectangle(mRgba, new Rect(0, 0, 100, 100), green);
+        Imgproc.putText(mRgba, ""+mRgba.width()+"x"+mRgba.height(),  new Point(0, 20) ,Imgproc.FONT_HERSHEY_SIMPLEX ,1, green);
 
         // return processed frame for live preview
         return mRgba;
