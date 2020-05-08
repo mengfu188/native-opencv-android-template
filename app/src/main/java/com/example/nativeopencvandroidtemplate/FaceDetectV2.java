@@ -1,5 +1,9 @@
 package com.example.nativeopencvandroidtemplate;
 
+/**
+ * Created by cmf on 20-5-7.
+ */
+
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 

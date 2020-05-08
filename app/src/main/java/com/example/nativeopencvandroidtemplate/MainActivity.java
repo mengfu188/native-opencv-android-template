@@ -30,6 +30,7 @@ import org.opencv.imgproc.Imgproc;
 public class MainActivity extends Activity implements CvCameraViewListener2 {
     private static final String TAG = "MainActivity";
     private static final int CAMERA_PERMISSION_REQUEST = 1;
+    private static final Timer timer = new Timer();
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -131,6 +132,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public Mat onCameraFrame(CvCameraViewFrame frame) {
         // get current camera frame as OpenCV Mat object
 //        Mat mat = frame.gray();
+        timer.tic();
         Mat mRgba = frame.rgba();
 //        Imgproc.rot
         Mat rotateMat = Imgproc.getRotationMatrix2D(new Point(mRgba.rows() / 2, mRgba.cols() / 2), 90, 1);
@@ -140,10 +142,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Bitmap bmp = Bitmap.createBitmap(mRgba.cols(), mRgba.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(mRgba, bmp);
 
+        timer.tic();
         float []result = FaceDetectV2.detectByBitmap(bmp);
+        timer.toc("face detect v2 total cost");
         if(result != null){
             Imgproc.rectangle(mRgba, new Point(result[1], result[2]), new Point(result[3], result[4]), green);
         }
+
+        timer.toc("process frame");
 
 //        Utils.bitmapToMat(bmp, mRgba);
 //        Mat out = new Mat();
